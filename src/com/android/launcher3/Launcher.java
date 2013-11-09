@@ -978,6 +978,11 @@ public class Launcher extends Activity
     }
 
     protected void startSettings() {
+       Intent i = new Intent(android.provider.Settings.ACTION_SETTINGS);
+       startActivity(i);
+       if (mWorkspace.isInOverviewMode()) {
+           mWorkspace.exitOverviewMode(false);
+       }
     }
 
     public interface QSBScroller {
