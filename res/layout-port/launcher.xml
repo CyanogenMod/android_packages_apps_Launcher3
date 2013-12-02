@@ -29,7 +29,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- The workspace contains 5 screens of cells -->
         <com.android.launcher3.Workspace
             android:id="@+id/workspace"
             android:layout_width="match_parent"
