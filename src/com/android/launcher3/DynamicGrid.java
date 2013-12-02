@@ -19,6 +19,7 @@ package com.android.launcher3;
 import android.appwidget.AppWidgetHostView;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Paint;
@@ -26,6 +27,7 @@ import android.graphics.Paint.FontMetrics;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -90,10 +92,11 @@ class DeviceProfile {
     int hotseatAllAppsRank;
     int allAppsNumRows;
     int allAppsNumCols;
+    boolean showSearchBar;
     int searchBarSpaceWidthPx;
     int searchBarSpaceMaxWidthPx;
     int searchBarSpaceHeightPx;
-    int searchBarHeightPx;
+    private int searchBarHeightPx;
     int pageIndicatorHeightPx;
 
     DeviceProfile(String n, float w, float h, float r, float c,
@@ -183,9 +186,9 @@ class DeviceProfile {
 
         // Search Bar
         searchBarSpaceMaxWidthPx = resources.getDimensionPixelSize(R.dimen.dynamic_grid_search_bar_max_width);
-        searchBarHeightPx = resources.getDimensionPixelSize(R.dimen.dynamic_grid_search_bar_height);
         searchBarSpaceWidthPx = Math.min(searchBarSpaceMaxWidthPx, widthPx);
-        searchBarSpaceHeightPx = searchBarHeightPx + 2 * edgeMarginPx;
+        searchBarHeightPx = resources.getDimensionPixelSize(R.dimen.dynamic_grid_search_bar_height);
+
 
         // Calculate the actual text height
         Paint textPaint = new Paint();
@@ -245,6 +248,26 @@ class DeviceProfile {
         }
         allAppsNumCols = (availableWidthPx - padding.left - padding.right - 2 * edgeMarginPx) /
                 (iconSizePx + 2 * edgeMarginPx);
+    }
+
+    void updateFromPreferences(SharedPreferences prefs) {
+        int prefNumColumns = prefs.getInt(LauncherPreferences.KEY_WORKSPACE_COLS, 0);
+        if(prefNumColumns > 0) {
+            numColumns = prefNumColumns;
+        }
+
+        int prefNumRows = prefs.getInt(LauncherPreferences.KEY_WORKSPACE_ROWS, 0);
+        if(prefNumRows > 0) {
+            numRows = prefNumRows;
+        }
+
+        showSearchBar = prefs.getBoolean(LauncherPreferences.KEY_SHOW_SEARCHBAR, true);
+        if(showSearchBar) {
+            searchBarSpaceHeightPx = searchBarHeightPx + 2 * edgeMarginPx;
+        }
+        else {
+            searchBarSpaceHeightPx = 2 * edgeMarginPx;
+        }
     }
 
     private float dist(PointF p0, PointF p1) {
@@ -393,23 +416,31 @@ class DeviceProfile {
 
         // Layout the search bar
         View qsbBar = launcher.getQsbBar();
-        LayoutParams vglp = qsbBar.getLayoutParams();
-        vglp.width = LayoutParams.MATCH_PARENT;
-        vglp.height = LayoutParams.MATCH_PARENT;
-        qsbBar.setLayoutParams(vglp);
 
-        // Layout the voice proxy
-        View voiceButtonProxy = launcher.findViewById(R.id.voice_button_proxy);
-        if (voiceButtonProxy != null) {
-            if (hasVerticalBarLayout) {
-                // TODO: MOVE THIS INTO SEARCH BAR MEASURE
-            } else {
-                lp = (FrameLayout.LayoutParams) voiceButtonProxy.getLayoutParams();
-                lp.gravity = Gravity.TOP | Gravity.END;
-                lp.width = (widthPx - searchBarSpaceWidthPx) / 2 +
-                        2 * iconSizePx;
-                lp.height = searchBarSpaceHeightPx;
+        if (showSearchBar) {
+            Log.i("DeviceProfile.render()", "Showing searchbar.");
+            LayoutParams vglp = qsbBar.getLayoutParams();
+            vglp.width = LayoutParams.MATCH_PARENT;
+            vglp.height = LayoutParams.MATCH_PARENT;
+            qsbBar.setLayoutParams(vglp);
+
+            // Layout the voice proxy
+            View voiceButtonProxy = launcher.findViewById(R.id.voice_button_proxy);
+            if (voiceButtonProxy != null) {
+                if (hasVerticalBarLayout) {
+                    // TODO: MOVE THIS INTO SEARCH BAR MEASURE
+                } else {
+                    lp = (FrameLayout.LayoutParams) voiceButtonProxy.getLayoutParams();
+                    lp.gravity = Gravity.TOP | Gravity.END;
+                    lp.width = (widthPx - searchBarSpaceWidthPx) / 2 +
+                            2 * iconSizePx;
+                    lp.height = searchBarSpaceHeightPx;
+                }
             }
+        }
+        else {
+            Log.i("DeviceProfile.render()", "Hiding searchbar.");
+            qsbBar.setVisibility(View.GONE);
         }
 
         // Layout the workspace
