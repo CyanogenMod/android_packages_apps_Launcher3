@@ -130,6 +130,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.android.launcher3.LauncherPreferencesActivity"></activity>
+
         <!-- Debugging tools -->
         <activity
             android:name="com.android.launcher3.MemoryDumpActivity"
