@@ -45,6 +45,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -316,7 +317,12 @@ public class Workspace extends SmoothPagedView
                 res.getInteger(R.integer.config_workspaceOverviewShrinkPercentage) / 100.0f;
         mOverviewModePageOffset = res.getDimensionPixelSize(R.dimen.overview_mode_page_offset);
         mCameraDistance = res.getInteger(R.integer.config_cameraDistance);
-        mOriginalDefaultPage = mDefaultPage = a.getInt(R.styleable.Workspace_defaultScreen, 1);
+
+        mOriginalDefaultPage = mDefaultPage =
+                PreferenceManager.getDefaultSharedPreferences(context)
+                        .getInt(LauncherPreferences.KEY_WORKSPACE_DEFAULT_PAGE,
+                                a.getInt(R.styleable.Workspace_defaultScreen, 0));
+
         a.recycle();
 
         setOnHierarchyChangeListener(this);
@@ -4075,7 +4081,9 @@ public class Workspace extends SmoothPagedView
         if (mSavedStates != null) {
             mRestoredPages.add(child);
             CellLayout cl = (CellLayout) getChildAt(child);
-            cl.restoreInstanceState(mSavedStates);
+            if (cl != null) {
+                cl.restoreInstanceState(mSavedStates);
+            }
         }
     }
 
