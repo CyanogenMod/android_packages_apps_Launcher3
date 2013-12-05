@@ -1268,8 +1268,8 @@ public class LauncherModel extends BroadcastReceiver {
                 return false;
             }
 
-            if (occupied.containsKey(LauncherSettings.Favorites.CONTAINER_HOTSEAT)) {
-                if (occupied.get(LauncherSettings.Favorites.CONTAINER_HOTSEAT)
+            if (occupied.containsKey((long) LauncherSettings.Favorites.CONTAINER_HOTSEAT)) {
+                if (occupied.get((long) LauncherSettings.Favorites.CONTAINER_HOTSEAT)
                         [(int) item.screenId][0] != null) {
                     Log.e(TAG, "Error loading shortcut into hotseat " + item
                             + " into position (" + item.screenId + ":" + item.cellX + ","
@@ -1277,6 +1277,11 @@ public class LauncherModel extends BroadcastReceiver {
                             + occupied.get(LauncherSettings.Favorites.CONTAINER_HOTSEAT)
                             [(int) item.screenId][0]);
                         return false;
+                } else {
+                    ItemInfo[][] hotseatItems = occupied.get(
+                            (long) LauncherSettings.Favorites.CONTAINER_HOTSEAT);
+                    hotseatItems[(int) item.screenId][0] = item;
+                    return true;
                 }
             } else {
                 ItemInfo[][] items = new ItemInfo[countX + 1][countY + 1];
