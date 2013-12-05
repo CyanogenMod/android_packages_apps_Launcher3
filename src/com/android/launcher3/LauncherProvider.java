@@ -58,7 +58,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LauncherProvider extends ContentProvider {
     private static final String TAG = "Launcher.LauncherProvider";
@@ -1023,6 +1025,10 @@ public class LauncherProvider extends ContentProvider {
 
                 final int depth = parser.getDepth();
 
+                final HashMap<Long, ItemInfo[][]> occupied = new HashMap<Long, ItemInfo[][]>();
+                LauncherModel model = LauncherAppState.getInstance().getModel();
+                AtomicBoolean deleteItem = new AtomicBoolean();
+
                 int type;
                 while (((type = parser.next()) != XmlPullParser.END_TAG ||
                         parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {
@@ -1074,6 +1080,30 @@ public class LauncherProvider extends ContentProvider {
                     values.put(LauncherSettings.Favorites.SCREEN, screen);
                     values.put(LauncherSettings.Favorites.CELLX, x);
                     values.put(LauncherSettings.Favorites.CELLY, y);
+
+                    ItemInfo info = new ItemInfo();
+                    info.container = container;
+                    info.spanX = a.getInt(R.styleable.Favorite_spanX, 1);
+                    info.spanY = a.getInt(R.styleable.Favorite_spanY, 1);
+                    info.cellX = a.getInt(R.styleable.Favorite_x, 0);
+                    info.cellY = a.getInt(R.styleable.Favorite_y, 0);
+                    info.screenId = a.getInt(R.styleable.Favorite_screen, 0);
+
+                    if (values.containsKey(LauncherSettings.Favorites.SPANX)) {
+                        info.spanX = values.getAsInteger(LauncherSettings.Favorites.SPANX);
+                    } else {
+                        info.spanX = 1;
+                    }
+
+                    if (values.containsKey(LauncherSettings.Favorites.SPANY)) {
+                        info.spanY = values.getAsInteger(LauncherSettings.Favorites.SPANY);
+                    } else {
+                        info.spanY = 1;
+                    }
+
+                    if (!model.checkItemPlacement(occupied, info, deleteItem)) {
+                        continue;
+                    }
 
                     if (LOGD) {
                         final String title = a.getString(R.styleable.Favorite_title);
@@ -1161,7 +1191,26 @@ public class LauncherProvider extends ContentProvider {
                             added = false;
                         }
                     }
-                    if (added) i++;
+                    if (added) {
+                        i++;
+                    } else {
+                        LauncherAppState app = LauncherAppState.getInstance();
+                        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+                        int countX = (int) grid.numColumns;
+                        int countY = (int) grid.numRows;
+                        if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                            ItemInfo[][] items = new ItemInfo[countX + 1][countY + 1];
+                            items[(int) info.screenId][0] = null;
+                            occupied.put((long) LauncherSettings.Favorites.CONTAINER_HOTSEAT, items);
+                        } else {
+                            ItemInfo[][] screens = occupied.get(info.screenId);
+                            for (int gridX = info.cellX; gridX < (info.cellX+info.spanX); gridX++) {
+                                for (int gridY = info.cellY; gridY < (info.cellY+info.spanY); gridY++) {
+                                    screens[gridX][gridY] = null;
+                                }
+                            }
+                        }
+                    }
                     a.recycle();
                 }
             } catch (XmlPullParserException e) {
