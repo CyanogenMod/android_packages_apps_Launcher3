@@ -15,14 +15,9 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Folder titles -->
-    <string name="google_title" translatable="false">Google</string>
-
-    <!-- Preferences -->
-    <string name="pref_workspace_title">Workspace settings</string>
-    <string name="pref_title_workspace_rows">Rows</string>
-    <string name="pref_title_workspace_cols">Columns</string>
-    <string name="pref_title_default_workspace">Default Screen</string>
-    <string name="pref_title_show_search_bar">Show Search Bar</string>
-
+    <string name="pref_workspace_title">Instellingen startscherm</string>
+    <string name="pref_title_workspace_rows">Rijen</string>
+    <string name="pref_title_workspace_cols">Kolommen</string>
+    <string name="pref_title_default_workspace">Standaarscherm</string>
+    <string name="pref_title_show_search_bar">Zoekbalk weergeven</string>
 </resources>
