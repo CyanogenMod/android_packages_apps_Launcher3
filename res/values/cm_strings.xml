@@ -25,4 +25,16 @@
     <string name="pref_title_default_workspace">Default Screen</string>
     <string name="pref_title_show_search_bar">Show Search Bar</string>
 
+    <!-- AOSP dummy strings -->
+    <string name="chooser_wallpaper">""</string>
+    <string name="folder_cling_move_item">""</string>
+    <string name="group_wallpapers">""</string>
+    <string name="menu_add">""</string>
+    <string name="menu_help">""</string>
+    <string name="menu_manage_apps">""</string>
+    <string name="menu_notifications">""</string>
+    <string name="menu_search">""</string>
+    <string name="menu_settings">""</string>
+    <string name="menu_wallpaper">""</string>
+    <string name="workspace_cling_open_all_apps">""</string>
 </resources>
