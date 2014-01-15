@@ -118,7 +118,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.android.launcher3.LauncherPreferencesActivity"></activity>
+        <activity
+            android:name="com.android.launcher3.LauncherPreferencesActivity"
+            android:theme="@style/Theme.Preferences">
+        </activity>
 
         <!-- Debugging tools -->
         <activity
