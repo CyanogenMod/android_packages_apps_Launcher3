@@ -1274,7 +1274,7 @@ public class LauncherModel extends BroadcastReceiver {
                     Log.e(TAG, "Error loading shortcut into hotseat " + item
                             + " into position (" + item.screenId + ":" + item.cellX + ","
                             + item.cellY + ") occupied by "
-                            + occupied.get(LauncherSettings.Favorites.CONTAINER_HOTSEAT)
+                            + occupied.get((long) LauncherSettings.Favorites.CONTAINER_HOTSEAT)
                             [(int) item.screenId][0]);
                         return false;
                 } else {
