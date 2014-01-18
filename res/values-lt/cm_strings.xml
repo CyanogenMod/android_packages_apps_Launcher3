@@ -14,9 +14,9 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="pref_workspace_title">Pagrindinio ekrano nustatymai</string>
+    <string name="pref_workspace_title">Darbalaukio nustatymai</string>
     <string name="pref_title_workspace_rows">Eilutės</string>
     <string name="pref_title_workspace_cols">Stulpeliai</string>
     <string name="pref_title_default_workspace">Numatytasis ekranas</string>
-    <string name="pref_title_show_search_bar">Rodyti paieškos juostelę</string>
+    <string name="pref_title_show_search_bar">Rodyti paieškos juostą</string>
 </resources>
