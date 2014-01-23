@@ -129,6 +129,8 @@ public class Workspace extends SmoothPagedView
     private HashMap<Long, CellLayout> mWorkspaceScreens = new HashMap<Long, CellLayout>();
     private ArrayList<Long> mScreenOrder = new ArrayList<Long>();
 
+    public final static String INTENT_ACTION_ASSIST = "android.intent.action.ASSIST";
+
     /**
      * CellInfo for the cell that is currently being dragged
      */
@@ -147,7 +149,7 @@ public class Workspace extends SmoothPagedView
     CustomContentCallbacks mCustomContentCallbacks;
     boolean mCustomContentShowing;
     private float mLastCustomContentScrollProgress = -1f;
-    private String mCustomContentDescription = "";
+    private String mCustomContentDescription = "Google Now";
 
     /**
      * The CellLayout that is currently being dragged over
@@ -1079,6 +1081,8 @@ public class Workspace extends SmoothPagedView
 
         if (hasCustomContent() && getNextPage() == 0 && !mCustomContentShowing) {
             mCustomContentShowing = true;
+            Intent i = new Intent(INTENT_ACTION_ASSIST);
+            mLauncher.startActivity(i);
             if (mCustomContentCallbacks != null) {
                 mCustomContentCallbacks.onShow();
                 mCustomContentShowTime = System.currentTimeMillis();
@@ -1086,6 +1090,14 @@ public class Workspace extends SmoothPagedView
             }
         } else if (hasCustomContent() && getNextPage() != 0 && mCustomContentShowing) {
             mCustomContentShowing = false;
+            if (mCustomContentCallbacks != null) {
+                mCustomContentCallbacks.onHide();
+                mLauncher.resetQSBScroll();
+                mLauncher.updateVoiceButtonProxyVisible(false);
+            }
+        } else if (hasCustomContent() && getNextPage() == 0 && mCustomContentShowing) {
+            mCustomContentShowing = false;
+            moveToDefaultScreen(true);
             if (mCustomContentCallbacks != null) {
                 mCustomContentCallbacks.onHide();
                 mLauncher.resetQSBScroll();
