@@ -486,7 +486,7 @@ public class Launcher extends Activity
 
     /** To be overriden by subclasses to hint to Launcher that we have custom content */
     protected boolean hasCustomContentToLeft() {
-        return false;
+        return true;
     }
 
     /**

@@ -129,6 +129,8 @@ public class Workspace extends SmoothPagedView
     private HashMap<Long, CellLayout> mWorkspaceScreens = new HashMap<Long, CellLayout>();
     private ArrayList<Long> mScreenOrder = new ArrayList<Long>();
 
+    public final static String INTENT_ACTION_GLOBAL_SEARCH = "android.search.action.GLOBAL_SEARCH";
+
     /**
      * CellInfo for the cell that is currently being dragged
      */
@@ -147,7 +149,7 @@ public class Workspace extends SmoothPagedView
     CustomContentCallbacks mCustomContentCallbacks;
     boolean mCustomContentShowing;
     private float mLastCustomContentScrollProgress = -1f;
-    private String mCustomContentDescription = "";
+    private String mCustomContentDescription = "Google Now";
 
     /**
      * The CellLayout that is currently being dragged over
@@ -1079,6 +1081,8 @@ public class Workspace extends SmoothPagedView
 
         if (hasCustomContent() && getNextPage() == 0 && !mCustomContentShowing) {
             mCustomContentShowing = true;
+            Intent i = new Intent(INTENT_ACTION_GLOBAL_SEARCH);
+            mLauncher.startActivity(i);
             if (mCustomContentCallbacks != null) {
                 mCustomContentCallbacks.onShow();
                 mCustomContentShowTime = System.currentTimeMillis();
