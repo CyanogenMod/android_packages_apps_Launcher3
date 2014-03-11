@@ -1,6 +1,7 @@
 
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2014 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +14,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.launcher3;
@@ -4281,6 +4285,9 @@ public class Launcher extends Activity
     }
 
     public void showFirstRunCling() {
+        // Disable this, since it does not work with our concept:
+        // We cannot promote features which are not enabled by default
+        if (true) return;
         if (isClingsEnabled() &&
                 !mSharedPrefs.getBoolean(Cling.FIRST_RUN_CLING_DISMISSED_KEY, false) &&
                 !skipCustomClingIfNoAccounts() ) {
