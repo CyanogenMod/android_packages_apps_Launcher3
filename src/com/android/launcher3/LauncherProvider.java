@@ -211,9 +211,6 @@ public class LauncherProvider extends ContentProvider {
         if (notify == null || "true".equals(notify)) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
-        // always notify the backup agent
-        LauncherBackupAgentHelper.dataChanged(getContext());
     }
 
     private void addModifiedTime(ContentValues values) {
