@@ -201,5 +201,6 @@
 
         <meta-data android:name="android.nfc.disable_beam_default"
                        android:value="true" />
+        <meta-data android:name="com.sonymobile.evolutionui" android:resource="@xml/evolutionui"/>
     </application>
 </manifest>

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2014 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.launcher3;
@@ -136,7 +140,7 @@ public class DragController {
          */
         void onDragEnd();
     }
-    
+
     /**
      * Used to create a new DragLayer from XML.
      *
@@ -465,7 +469,7 @@ public class DragController {
      */
     void setMoveTarget(View view) {
         mMoveTarget = view;
-    }    
+    }
 
     public boolean dispatchUnhandledMove(View focused, int direction) {
         return mMoveTarget != null && mMoveTarget.dispatchUnhandledMove(focused, direction);
@@ -525,6 +529,9 @@ public class DragController {
     }
 
     private void checkScrollState(int x, int y) {
+        // If swiping is disabled, it should not be possible to scroll
+        // the desktop/workspace
+        if (mDisableSwipe) return;
         final int slop = ViewConfiguration.get(mLauncher).getScaledWindowTouchSlop();
         final int delay = mDistanceSinceScroll < slop ? RESCROLL_DELAY : SCROLL_DELAY;
         final DragLayer dragLayer = mLauncher.getDragLayer();
@@ -810,4 +817,8 @@ public class DragController {
             mDirection = direction;
         }
     }
+
+    // Disable scrolling of the desktop (i.e. there is only one desktop)
+    private boolean mDisableSwipe = false;
+    public void disableSwipe(boolean disable) { mDisableSwipe = disable; }
 }

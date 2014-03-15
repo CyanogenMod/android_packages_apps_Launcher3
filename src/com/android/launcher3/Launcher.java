@@ -66,6 +66,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -104,6 +105,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.launcher3.DropTarget.DragObject;
+import com.sonymobile.evolutionui.Feature;
+import com.sonymobile.evolutionui.util.EvUICHelper;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -365,6 +368,11 @@ public class Launcher extends Activity
         return Log.isLoggable(propertyName, Log.VERBOSE);
     }
 
+    // Connection to the Evolution UI Service
+    private EvUICHelper mEvUI;
+    private Feature mFeatCustomDesktop;
+    private Feature mFeatAllApps;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (DEBUG_STRICT_MODE) {
@@ -481,6 +489,25 @@ public class Launcher extends Activity
         unlockScreenOrientation(true);
 
         showFirstRunCling();
+
+        // Start listening to feature state changes
+        mEvUI = new EvUICHelper(this);
+        mEvUI.addFeature(mFeatCustomDesktop = new Feature("custom_desktop"));
+        mEvUI.addFeature(new Feature("multiple_desktop") {
+            @Override
+            public void onStateChanged(int level) {
+                boolean disableSwipe = level != Feature.STATE_ACTIVATED;
+                mWorkspace.disableSwipe(disableSwipe);
+                mDragController.disableSwipe(disableSwipe);
+            }
+        });
+        mEvUI.addFeature(mFeatAllApps = new Feature("all_apps") {
+            @Override
+            public void onStateChanged(int level) {
+                boolean allApps = (level == Feature.STATE_ACTIVATED);
+                mHotseat.enableAllAppsButton(allApps);
+            }
+        });
     }
 
     protected void onUserLeaveHint() {
@@ -665,7 +692,9 @@ public class Launcher extends Activity
     boolean isDraggingEnabled() {
         // We prevent dragging when we are loading the workspace as it is possible to pick up a view
         // that is subsequently removed from the workspace in startBinding().
-        return !mModel.isLoadingWorkspace();
+        // Dragging is also disabled if the custom_desktop feature is not activated
+        // (i.e. when the user cannot change the icons/widgets)
+        return !mModel.isLoadingWorkspace() && mFeatCustomDesktop.isActivated();
     }
 
     static int getScreen() {
@@ -823,6 +852,7 @@ public class Launcher extends Activity
 
     @Override
     protected void onStop() {
+        mEvUI.onStop();
         super.onStop();
         FirstFrameAnimatorHelper.setIsVisible(false);
     }
@@ -831,6 +861,7 @@ public class Launcher extends Activity
     protected void onStart() {
         super.onStart();
         FirstFrameAnimatorHelper.setIsVisible(true);
+        mEvUI.onStart();
     }
 
     @Override
@@ -2379,6 +2410,14 @@ public class Launcher extends Activity
     }
 
     boolean startActivity(View v, Intent intent, Object tag) {
+        // Send the "user experience" to the Evolution UI Service
+        // which will count the XP points and check of achievements are reached
+        try {
+            mEvUI.getService().addExperience("start_app");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         try {
@@ -2616,6 +2655,8 @@ public class Launcher extends Activity
         if (!isDraggingEnabled()) return false;
         if (isWorkspaceLocked()) return false;
         if (mState != State.WORKSPACE) return false;
+        // If the custom_desktop feature is not enabled, then don't listen to long-press events
+        if (!mFeatCustomDesktop.isActivated()) return false;
 
         if (v instanceof Workspace) {
             if (!mWorkspace.isInOverviewMode()) {
@@ -3614,6 +3655,8 @@ public class Launcher extends Activity
         mWidgetsToAdvance.clear();
         if (mHotseat != null) {
             mHotseat.resetLayout();
+            // Need to update the state of the "All Apps" icon
+            mHotseat.enableAllAppsButton(mFeatAllApps.isActivated());
         }
     }
 
@@ -4522,6 +4565,16 @@ public class Launcher extends Activity
                     }
                 }
             }.start();
+        }
+    }
+
+    public void sendDroppedOnDesktopExperience() {
+        // Send the "user experience" to the Evolution UI Service
+        // which will count the XP points and check of achievements are reached
+        try {
+            mEvUI.getService().addExperience("drop_on_desktop");
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

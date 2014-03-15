@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+
+    <experience id="start_app" name="Start an application" xp="1" />
+    <experience id="drop_on_desktop" name="Drop a shortcut/widget on the desktop" xp="10" />
+
+    <feature id="custom_desktop" name="Custom desktop" profile="2">
+        Allow customizing the desktop.
+    </feature>
+
+    <feature id="multiple_desktop" name="Multiple desktop" profile="2">
+        Allow using more then one desktop.
+    </feature>
+
+    <feature id="all_apps" name="See all applications" profile="2">
+        Show all applications.
+    </feature>
+
+    <achievement id="start_app_5x" name="Started 5 applications">
+        <condition>
+            <ifcount experience="start_app" count="5" />
+        </condition>
+        <description>
+            Started at least 5 applications.
+        </description>
+        <enable feature="all_apps" />
+    </achievement>
+
+    <achievement id="start_app_10x" name="Started 10 applications">
+        <condition>
+            <ifcount experience="start_app" count="10" />
+        </condition>
+        <description>
+            Started at least 10 applications.
+        </description>
+        <enable feature="custom_desktop" />
+    </achievement>
+
+    <achievement id="drop_on_desktop_5x" name="Dropped 5 shortcuts/widgets on desktop">
+        <condition>
+            <ifcount experience="drop_on_desktop" count="5" />
+        </condition>
+        <description>
+            Dropped 5 shortcuts/widgets on desktop
+        </description>
+        <enable feature="multiple_desktop" />
+    </achievement>
+
+</data>
