@@ -31,6 +31,14 @@
         launcher:y="0"
         launcher:spanX="4"
         launcher:spanY="2" />
+    <appwidget
+        launcher:packageName="com.android.launcher3"
+        launcher:className="com.android.launcher3.clockwidget.ClockWidgetProvider"
+        launcher:screen="1"
+        launcher:x="0"
+        launcher:y="0"
+        launcher:spanX="4"
+        launcher:spanY="2" />
 
     <!-- Dialer -->
     <favorite

@@ -199,6 +199,16 @@
             android:writePermission="com.android.launcher3.permission.WRITE_SETTINGS"
             android:readPermission="com.android.launcher3.permission.READ_SETTINGS" />
 
+        <!-- NOTE: this is just a quick'n'dirty implementation of the clock widget, in
+             order to make sure we can have at least some sort of lock in the initial state  -->
+        <receiver android:name=".clockwidget.ClockWidgetProvider" android:label="Clock Widget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/clockwidget_info" />
+        </receiver>
+
         <meta-data android:name="android.nfc.disable_beam_default"
                        android:value="true" />
         <meta-data android:name="com.sonymobile.evolutionui" android:resource="@xml/evolutionui"/>
