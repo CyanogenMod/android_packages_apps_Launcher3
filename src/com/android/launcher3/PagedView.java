@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2014 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.launcher3;
@@ -358,6 +362,10 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
                 mPageIndicator.setOnClickListener(listener);
             }
             mPageIndicator.setContentDescription(getPageIndicatorDescription());
+            // Hide the page indicator, if the user can see/use only one desktop
+            // (i.e. the multiple_desktop feature is not activated)
+            mPageIndicator.setVisibility(mDisableSwipe ? INVISIBLE : VISIBLE);
+            mPageIndicator.setAlpha(mDisableSwipe ? 0f : 1f);
         }
     }
 
@@ -1685,7 +1693,9 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         super.onTouchEvent(ev);
 
         // Skip touch handling if there are no pages to swipe
-        if (getChildCount() <= 0) return super.onTouchEvent(ev);
+        // Also skip touch handling, if desktop scrolling (i.e. multiple_desktop feature)
+        // is not enabled
+        if (getChildCount() <= 0 || mDisableSwipe) return super.onTouchEvent(ev);
 
         acquireVelocityTrackerAndAddMovement(ev);
 
@@ -2814,5 +2824,14 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     @Override
     public boolean onHoverEvent(android.view.MotionEvent event) {
         return true;
+    }
+
+    protected boolean mDisableSwipe = false;
+    public void disableSwipe(boolean disable) {
+        mDisableSwipe = disable;
+        if (mPageIndicator != null) {
+            mPageIndicator.setVisibility(disable ? INVISIBLE : VISIBLE);
+            mPageIndicator.setAlpha(disable ? 0f : 1f);
+        }
     }
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2014 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.launcher3;
@@ -44,6 +48,9 @@ public class Hotseat extends FrameLayout {
     private boolean mTransposeLayoutWithOrientation;
     private boolean mIsLandscape;
 
+    // Reference to the grid icon, which shows the app tray
+    private TextView mAllAppsButton;
+
     public Hotseat(Context context) {
         this(context, null);
     }
@@ -56,7 +63,7 @@ public class Hotseat extends FrameLayout {
         super(context, attrs, defStyle);
 
         Resources r = context.getResources();
-        mTransposeLayoutWithOrientation = 
+        mTransposeLayoutWithOrientation =
                 r.getBoolean(R.bool.hotseat_transpose_layout_with_orientation);
         mIsLandscape = context.getResources().getConfiguration().orientation ==
             Configuration.ORIENTATION_LANDSCAPE;
@@ -78,7 +85,7 @@ public class Hotseat extends FrameLayout {
     public void setOnLongClickListener(OnLongClickListener l) {
         mContent.setOnLongClickListener(l);
     }
-  
+
     private boolean hasVerticalHotseat() {
         return (mIsLandscape && mTransposeLayoutWithOrientation);
     }
@@ -149,6 +156,7 @@ public class Hotseat extends FrameLayout {
             LayoutInflater inflater = LayoutInflater.from(context);
             TextView allAppsButton = (TextView)
                     inflater.inflate(R.layout.all_apps_button, mContent, false);
+            mAllAppsButton = allAppsButton;
             Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
             Utilities.resizeIconDrawable(d);
             allAppsButton.setCompoundDrawables(null, d, null, null);
@@ -235,5 +243,10 @@ public class Hotseat extends FrameLayout {
                 info.add(si);
             }
         }
+    }
+
+    // Show or hide the app-tray icon. This is related to the "all_apps" feature.
+    public void enableAllAppsButton(boolean enable) {
+        mAllAppsButton.setVisibility(enable ? View.VISIBLE : View.GONE);
     }
 }

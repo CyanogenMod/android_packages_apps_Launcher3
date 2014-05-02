@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2014 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.launcher3;
@@ -1977,7 +1981,10 @@ public class Workspace extends SmoothPagedView
         final boolean stateIsSmall = (state == State.SMALL);
         final boolean stateIsOverview = (state == State.OVERVIEW);
         float finalBackgroundAlpha = (stateIsSpringLoaded || stateIsOverview) ? 1.0f : 0f;
-        float finalHotseatAndPageIndicatorAlpha = (stateIsOverview || stateIsSmall) ? 0f : 1f;
+        float finalHotseatAlpha = (stateIsOverview || stateIsSmall) ? 0f : 1f;
+        // Now the page indicator and overview panel are not always visible at the same time
+        // so we need to calculate separate alpha values for them
+        float finalPageIndicatorAlpha = mDisableSwipe ? 0f : finalHotseatAlpha;
         float finalOverviewPanelAlpha = stateIsOverview ? 1f : 0f;
         float finalSearchBarAlpha = !stateIsNormal ? 0f : 1f;
         float finalWorkspaceTranslationY = stateIsOverview ? getOverviewModeTranslationY() : 0;
@@ -2092,10 +2099,10 @@ public class Workspace extends SmoothPagedView
             ObjectAnimator pageIndicatorAlpha = null;
             if (getPageIndicator() != null) {
                 pageIndicatorAlpha = ObjectAnimator.ofFloat(getPageIndicator(), "alpha",
-                        finalHotseatAndPageIndicatorAlpha);
+                        finalPageIndicatorAlpha);
             }
             ObjectAnimator hotseatAlpha = ObjectAnimator.ofFloat(hotseat, "alpha",
-                    finalHotseatAndPageIndicatorAlpha);
+                    finalHotseatAlpha);
             ObjectAnimator searchBarAlpha = ObjectAnimator.ofFloat(searchBar,
                     "alpha", finalSearchBarAlpha);
             ObjectAnimator overviewPanelAlpha = ObjectAnimator.ofFloat(overviewPanel,
@@ -2123,10 +2130,10 @@ public class Workspace extends SmoothPagedView
         } else {
             overviewPanel.setAlpha(finalOverviewPanelAlpha);
             AlphaUpdateListener.updateVisibility(overviewPanel);
-            hotseat.setAlpha(finalHotseatAndPageIndicatorAlpha);
+            hotseat.setAlpha(finalHotseatAlpha);
             AlphaUpdateListener.updateVisibility(hotseat);
             if (getPageIndicator() != null) {
-                getPageIndicator().setAlpha(finalHotseatAndPageIndicatorAlpha);
+                getPageIndicator().setAlpha(finalPageIndicatorAlpha);
                 AlphaUpdateListener.updateVisibility(getPageIndicator());
             }
             searchBar.setAlpha(finalSearchBarAlpha);
@@ -2707,6 +2714,7 @@ public class Workspace extends SmoothPagedView
             final int[] touchXY = new int[] { (int) mDragViewVisualCenter[0],
                     (int) mDragViewVisualCenter[1] };
             onDropExternal(touchXY, d.dragInfo, dropTargetLayout, false, d);
+            mLauncher.sendDroppedOnDesktopExperience();
         } else if (mDragInfo != null) {
             final View cell = mDragInfo.cell;
 

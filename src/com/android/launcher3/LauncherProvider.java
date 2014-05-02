@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2014 Sony Mobile Communications AB.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * NOTE: This file has been modified by Sony Mobile Communications AB.
+ * Modifications are licensed under the License.
  */
 
 package com.android.launcher3;
@@ -211,9 +215,6 @@ public class LauncherProvider extends ContentProvider {
         if (notify == null || "true".equals(notify)) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
-        // always notify the backup agent
-        LauncherBackupAgentHelper.dataChanged(getContext());
     }
 
     private void addModifiedTime(ContentValues values) {
@@ -274,7 +275,7 @@ public class LauncherProvider extends ContentProvider {
                 if (tm.getPhoneType() == TelephonyManager.PHONE_TYPE_NONE) {
                     workspaceResId = sp.getInt(DEFAULT_WORKSPACE_RESOURCE_ID, R.xml.default_workspace_no_telephony);
                 } else {
-                    workspaceResId = sp.getInt(DEFAULT_WORKSPACE_RESOURCE_ID, R.xml.default_workspace);
+                    workspaceResId = sp.getInt(DEFAULT_WORKSPACE_RESOURCE_ID, R.xml.default_workspace_evui);
                 }
             }
 
